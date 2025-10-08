@@ -1,0 +1,126 @@
+.toolbar {
+  width: 280px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.toolbarHeader {
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.toolbarTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.nodeList {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nodeButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.nodeButton:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+.nodeButton.trigger:hover {
+  border-color: #3b82f6;
+}
+
+.nodeButton.action:hover {
+  border-color: #10b981;
+}
+
+.nodeButton.condition:hover {
+  border-color: #f59e0b;
+}
+
+.nodeButtonIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.nodeButtonContent {
+  flex: 1;
+}
+
+.nodeButtonLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.nodeButtonDescription {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.toolbarFooter {
+  padding: 16px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
+}
+
+.clearButton {
+  width: 100%;
+  padding: 10px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.clearButton:hover {
+  background: #dc2626;
+}
+
+.helpText {
+  padding: 16px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.helpText p {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.helpText ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.helpText li {
+  margin-bottom: 4px;
+}
