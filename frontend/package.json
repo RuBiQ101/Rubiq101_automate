@@ -9,11 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@reactflow/core": "^11.11.4",
+    "axios": "^1.12.2",
+    "js-cookie": "^3.0.5",
     "next": "^15.5.4",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "reactflow": "^11.11.4",
+    "swr": "^2.3.6"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1"
   }

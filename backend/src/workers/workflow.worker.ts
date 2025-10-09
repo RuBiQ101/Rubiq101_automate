@@ -1,27 +1,15 @@
 import { Worker, type Job } from 'bullmq';
 import redisOptions from '../redis';
-// TODO: Implement WorkflowEngine
-// import { WorkflowEngine } from '../engine/WorkflowEngine';
+import { WorkflowEngine } from '../engine/WorkflowEngine';
 
 export const workflowWorker = new Worker(
   'workflowQueue',
   async (job: Job) => {
     const { workflowId, triggerData, userId } = job.data;
-
-    // TODO: Replace with actual WorkflowEngine implementation
-    // const engine = new WorkflowEngine();
-    // const result = await engine.executeWorkflow(workflowId, triggerData, userId);
-    
-    // Placeholder implementation
     console.log(`Processing workflow ${workflowId} for user ${userId}`);
-    const result = {
-      workflowId,
-      userId,
-      status: 'completed',
-      executedAt: new Date().toISOString(),
-      triggerData,
-    };
 
+    const engine = new WorkflowEngine();
+    const result = await engine.executeWorkflow(workflowId, triggerData, userId);
     return result;
   },
   {

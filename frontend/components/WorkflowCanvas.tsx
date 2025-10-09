@@ -1,247 +1,278 @@
 "use client";
+import { useCallback, useEffect, useState } from 'react';
+import ReactFlow, {
+  type Node,
+  type Edge,
+  addEdge,
+  type Connection,
+  useNodesState,
+  useEdgesState,
+  Background,
+  Controls,
+  MiniMap,
+  type NodeTypes,
+} from 'reactflow';
+import 'reactflow/dist/style.css';
 
-import { useState, useRef, useEffect } from "react";
-import Node, { type NodeData, type NodeType } from "./workflow/Node";
-import Connection, { type ConnectionData } from "./workflow/Connection";
-import Toolbar from "./workflow/Toolbar";
-import styles from "./WorkflowCanvas.module.css";
+// Custom node types
+const TriggerNode = ({ data }: any) => (
+  <div className="px-4 py-2 shadow-md rounded-md bg-green-100 border-2 border-green-200">
+    <div className="font-bold">{data.label}</div>
+    <div className="text-sm text-gray-600">Trigger</div>
+  </div>
+);
 
-export default function WorkflowCanvas() {
-  const [nodes, setNodes] = useState<NodeData[]>([]);
-  const [connections, setConnections] = useState<ConnectionData[]>([]);
+const AINode = ({ data }: any) => (
+  <div className="px-4 py-2 shadow-md rounded-md bg-blue-100 border-2 border-blue-200">
+    <div className="font-bold">{data.label}</div>
+    <div className="text-sm text-gray-600">AI Step</div>
+    {data.config?.prompt && (
+      <div className="text-xs mt-1 text-gray-500 max-w-32 truncate">
+        {data.config.prompt}
+      </div>
+    )}
+  </div>
+);
+
+const ActionNode = ({ data }: any) => (
+  <div className="px-4 py-2 shadow-md rounded-md bg-yellow-100 border-2 border-yellow-200">
+    <div className="font-bold">{data.label}</div>
+    <div className="text-sm text-gray-600">Action</div>
+  </div>
+);
+
+const nodeTypes: NodeTypes = {
+  trigger: TriggerNode,
+  ai: AINode,
+  action: ActionNode,
+};
+
+interface WorkflowCanvasProps {
+  workflow?: any;
+  onSave?: (definition: any) => void;
+  onExecute?: () => void;
+  isExecuting?: boolean;
+}
+
+export default function WorkflowCanvas({ 
+  workflow, 
+  onSave, 
+  onExecute, 
+  isExecuting = false 
+}: WorkflowCanvasProps) {
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [selectedConnectionId, setSelectedConnectionId] = useState<string | null>(null);
-  const [connectingFrom, setConnectingFrom] = useState<string | null>(null);
-  const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
-  const [isPanning, setIsPanning] = useState(false);
-  const panStartPos = useRef({ x: 0, y: 0 });
-  const canvasRef = useRef<HTMLDivElement>(null);
 
-  // Add node
-  const addNode = (type: NodeType) => {
-    const newNode: NodeData = {
-      id: `node-${Date.now()}`,
+  // Load workflow definition into canvas
+  useEffect(() => {
+    if (workflow?.definition?.steps) {
+      const workflowNodes = workflow.definition.steps.map((step: any, index: number) => ({
+        id: step.id,
+        type: step.type,
+        position: { x: 100 + (index * 200), y: 100 },
+        data: { 
+          label: step.name,
+          config: step.config,
+          stepType: step.type
+        },
+      }));
+
+      const workflowEdges = workflow.definition.steps
+        .filter((step: any) => step.next?.length > 0)
+        .flatMap((step: any) => 
+          step.next.map((nextId: string) => ({
+            id: `${step.id}-${nextId}`,
+            source: step.id,
+            target: nextId,
+          }))
+        );
+
+      setNodes(workflowNodes as any);
+      setEdges(workflowEdges as any);
+    }
+  }, [workflow, setNodes, setEdges]);
+
+  const onConnect = useCallback(
+    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  );
+
+  const addNode = (type: 'trigger' | 'ai' | 'action') => {
+    const id = `${type}_${Date.now()}`;
+    const newNode: Node = {
+      id,
       type,
-      position: { x: 300 - canvasOffset.x, y: 200 - canvasOffset.y },
-      data: {
-        label: `${type.charAt(0).toUpperCase() + type.slice(1)} Node`,
-        description: `New ${type} node`,
+      position: { x: Math.random() * 400, y: Math.random() * 400 },
+      data: { 
+        label: `New ${type.charAt(0).toUpperCase() + type.slice(1)}`,
+        config: type === 'ai' ? { prompt: 'Enter your prompt here', model: 'gpt-3.5-turbo' } : {},
+        stepType: type
       },
     };
-    setNodes([...nodes, newNode]);
+    setNodes((nds) => nds.concat(newNode));
   };
 
-  // Clear canvas
-  const clearCanvas = () => {
-    if (confirm("Are you sure you want to clear the canvas?")) {
-      setNodes([]);
-      setConnections([]);
-      setSelectedNodeId(null);
-      setSelectedConnectionId(null);
-    }
-  };
-
-  // Node drag handlers
-  const handleNodeDragStart = (id: string, e: React.MouseEvent) => {
-    setSelectedNodeId(id);
-    setSelectedConnectionId(null);
-  };
-
-  const handleNodeDrag = (id: string, dx: number, dy: number) => {
-    setNodes((prevNodes) =>
-      prevNodes.map((node) =>
-        node.id === id
-          ? {
-              ...node,
-              position: {
-                x: node.position.x + dx,
-                y: node.position.y + dy,
-              },
-            }
+  const updateNodeConfig = (nodeId: string, config: any) => {
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, config } }
           : node
       )
     );
   };
 
-  const handleNodeDragEnd = () => {
-    // Drag end logic if needed
-  };
-
-  // Node click handler
-  const handleNodeClick = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedNodeId(id);
-    setSelectedConnectionId(null);
-  };
-
-  // Connection handlers
-  const handleOutputClick = (nodeId: string) => {
-    if (connectingFrom === null) {
-      setConnectingFrom(nodeId);
-    } else {
-      // Create connection
-      const newConnection: ConnectionData = {
-        id: `conn-${Date.now()}`,
-        source: connectingFrom,
-        target: nodeId,
-      };
-      setConnections([...connections, newConnection]);
-      setConnectingFrom(null);
-    }
-  };
-
-  const handleInputClick = (nodeId: string) => {
-    if (connectingFrom !== null && connectingFrom !== nodeId) {
-      // Create connection
-      const newConnection: ConnectionData = {
-        id: `conn-${Date.now()}`,
-        source: connectingFrom,
-        target: nodeId,
-      };
-      setConnections([...connections, newConnection]);
-      setConnectingFrom(null);
-    }
-  };
-
-  const handleConnectionClick = (id: string) => {
-    setSelectedConnectionId(id);
-    setSelectedNodeId(null);
-  };
-
-  // Canvas click handler
-  const handleCanvasClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      setSelectedNodeId(null);
-      setSelectedConnectionId(null);
-      setConnectingFrom(null);
-    }
-  };
-
-  // Canvas panning
-  const handleCanvasMouseDown = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      setIsPanning(true);
-      panStartPos.current = { x: e.clientX, y: e.clientY };
-    }
-  };
-
-  useEffect(() => {
-    if (!isPanning) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const dx = e.clientX - panStartPos.current.x;
-      const dy = e.clientY - panStartPos.current.y;
-      setCanvasOffset((prev) => ({
-        x: prev.x + dx,
-        y: prev.y + dy,
-      }));
-      panStartPos.current = { x: e.clientX, y: e.clientY };
+  const handleSave = () => {
+    const definition = {
+      steps: nodes.map((node: any) => ({
+        id: node.id,
+        type: node.data.stepType,
+        name: node.data.label,
+        config: node.data.config || {},
+        next: (edges as Edge[])
+          .filter((edge) => edge.source === node.id)
+          .map((edge) => edge.target),
+      })),
     };
-
-    const handleMouseUp = () => {
-      setIsPanning(false);
-    };
-
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isPanning]);
-
-  // Delete selected node or connection
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Delete" || e.key === "Backspace") {
-        if (selectedNodeId) {
-          setNodes((prevNodes) =>
-            prevNodes.filter((node) => node.id !== selectedNodeId)
-          );
-          setConnections((prevConns) =>
-            prevConns.filter(
-              (conn) =>
-                conn.source !== selectedNodeId && conn.target !== selectedNodeId
-            )
-          );
-          setSelectedNodeId(null);
-        } else if (selectedConnectionId) {
-          setConnections((prevConns) =>
-            prevConns.filter((conn) => conn.id !== selectedConnectionId)
-          );
-          setSelectedConnectionId(null);
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [selectedNodeId, selectedConnectionId]);
-
-  // Get node position for connections
-  const getNodeCenter = (nodeId: string) => {
-    const node = nodes.find((n) => n.id === nodeId);
-    if (!node) return { x: 0, y: 0 };
-    return {
-      x: node.position.x + 100 + canvasOffset.x,
-      y: node.position.y + 50 + canvasOffset.y,
-    };
+    onSave?.(definition);
   };
+
+  const selectedNode = (nodes as any[]).find(n => n.id === selectedNodeId);
 
   return (
-    <div className={styles.container}>
-      <Toolbar onAddNode={addNode} onClearCanvas={clearCanvas} />
-      <div
-        ref={canvasRef}
-        className={styles.canvas}
-        onClick={handleCanvasClick}
-        onMouseDown={handleCanvasMouseDown}
-        style={{ cursor: isPanning ? "grabbing" : "default" }}
-      >
-        <div
-          className={styles.canvasContent}
-          style={{
-            transform: `translate(${canvasOffset.x}px, ${canvasOffset.y}px)`,
-          }}
+    <div className="flex h-full">
+      {/* Canvas */}
+      <div className="flex-1 relative">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onNodeClick={(_, node) => setSelectedNodeId(node.id)}
+          nodeTypes={nodeTypes}
+          fitView
         >
-          {/* SVG for connections */}
-          <svg className={styles.connectionLayer}>
-            {connections.map((conn) => (
-              <Connection
-                key={conn.id}
-                connection={conn}
-                sourcePos={getNodeCenter(conn.source)}
-                targetPos={getNodeCenter(conn.target)}
-                isSelected={conn.id === selectedConnectionId}
-                onClick={handleConnectionClick}
-              />
-            ))}
-          </svg>
+          <Background />
+          <Controls />
+          <MiniMap />
+        </ReactFlow>
 
-          {/* Nodes */}
-          {nodes.map((node) => (
-            <Node
-              key={node.id}
-              node={node}
-              isSelected={node.id === selectedNodeId}
-              onDragStart={handleNodeDragStart}
-              onDrag={handleNodeDrag}
-              onDragEnd={handleNodeDragEnd}
-              onClick={handleNodeClick}
-              onOutputClick={handleOutputClick}
-              onInputClick={handleInputClick}
-            />
-          ))}
+        {/* Toolbar */}
+        <div className="absolute top-4 left-4 bg-white p-2 rounded shadow-lg">
+          <button 
+            onClick={() => addNode('trigger')}
+            className="px-3 py-1 bg-green-500 text-white rounded mr-2"
+          >
+            + Trigger
+          </button>
+          <button 
+            onClick={() => addNode('ai')}
+            className="px-3 py-1 bg-blue-500 text-white rounded mr-2"
+          >
+            + AI Step
+          </button>
+          <button 
+            onClick={() => addNode('action')}
+            className="px-3 py-1 bg-yellow-500 text-white rounded mr-2"
+          >
+            + Action
+          </button>
         </div>
 
-        {/* Status bar */}
-        {connectingFrom && (
-          <div className={styles.statusBar}>
-            Click on another node's input port to create connection
-          </div>
-        )}
+        {/* Save/Execute buttons */}
+        <div className="absolute top-4 right-4 bg-white p-2 rounded shadow-lg">
+          <button 
+            onClick={handleSave}
+            className="px-4 py-2 bg-gray-600 text-white rounded mr-2"
+          >
+            Save
+          </button>
+          <button 
+            onClick={onExecute}
+            disabled={isExecuting}
+            className="px-4 py-2 bg-green-600 text-white rounded disabled:bg-gray-400"
+          >
+            {isExecuting ? 'Running...' : 'Execute'}
+          </button>
+        </div>
       </div>
+
+      {/* Property Panel */}
+      {selectedNode && (
+        <div className="w-80 bg-white border-l p-4">
+          <h3 className="font-bold mb-4">Edit {selectedNode.data.label}</h3>
+          
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Name:</label>
+            <input
+              type="text"
+              value={selectedNode.data.label}
+              onChange={(e) => {
+                setNodes((nds: any[]) =>
+                  nds.map((node: any) =>
+                    node.id === selectedNodeId
+                      ? { ...node, data: { ...node.data, label: e.target.value } }
+                      : node
+                  )
+                );
+              }}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          {selectedNode.data.stepType === 'ai' && (
+            <>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Prompt:</label>
+                <textarea
+                  value={selectedNode.data.config?.prompt || ''}
+                  onChange={(e) => 
+                    updateNodeConfig(selectedNodeId!, { 
+                      ...selectedNode.data.config, 
+                      prompt: e.target.value 
+                    })
+                  }
+                  className="w-full p-2 border rounded h-24"
+                  placeholder="Enter AI prompt..."
+                />
+              </div>
+              
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Model:</label>
+                <select
+                  value={selectedNode.data.config?.model || 'gpt-3.5-turbo'}
+                  onChange={(e) => 
+                    updateNodeConfig(selectedNodeId!, { 
+                      ...selectedNode.data.config, 
+                      model: e.target.value 
+                    })
+                  }
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                  <option value="gpt-4">GPT-4</option>
+                  <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+                </select>
+              </div>
+            </>
+          )}
+
+          <button
+            onClick={() => {
+              setNodes((nds: any[]) => nds.filter((node: any) => node.id !== selectedNodeId));
+              setEdges((eds: any[]) => eds.filter((edge: any) => 
+                edge.source !== selectedNodeId && edge.target !== selectedNodeId
+              ));
+              setSelectedNodeId(null);
+            }}
+            className="w-full px-4 py-2 bg-red-600 text-white rounded"
+          >
+            Delete Node
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express, { type Request, type Response, type NextFunction } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
 import executionsRouter from './routes/executions';
+import workflowsRouter from './routes/workflows';
+import llmRoutes from './routes/llm';
+import authRoutes from './routes/auth';
+import { requireAuth, type AuthRequest } from './middleware/auth';
 
 async function startServer() {
   // Run migrations before starting server
@@ -16,19 +22,10 @@ async function startServer() {
   const dbUrl = process.env.DATABASE_URL!;
 
   // Middleware
+  app.use(helmet());
+  app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-
-  // CORS middleware
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(200);
-    }
-    next();
-  });
 
   // Root endpoint
   app.get('/', (req: Request, res: Response) => {
@@ -55,22 +52,17 @@ async function startServer() {
   });
 
   // API routes
-  app.get('/api/workflows', (req: Request, res: Response) => {
-    res.json({ 
-      workflows: [],
-      message: 'Workflows endpoint - ready for implementation'
-    });
-  });
+  app.use('/api/workflows', workflowsRouter);
+  app.use('/api/llm', llmRoutes);
 
-  app.post('/api/workflows', (req: Request, res: Response) => {
-    res.json({ 
-      message: 'Create workflow endpoint - ready for implementation',
-      body: req.body
-    });
-  });
-
-  // Register executions router
+  // Register routers
+  app.use('/api/auth', authRoutes);
   app.use('/api/executions', executionsRouter);
+
+  // Example protected route
+  app.get('/api/me', requireAuth, (req: AuthRequest, res: Response) => {
+    res.json({ user: req.user });
+  });
 
   // Start server
   app.listen(port, () => {
@@ -80,6 +72,9 @@ async function startServer() {
     console.log(`\n🔗 API Endpoints:`);
     console.log(`   - Root: http://localhost:${port}/`);
     console.log(`   - Health: http://localhost:${port}/health`);
+    console.log(`   - Auth Signup: http://localhost:${port}/api/auth/signup`);
+    console.log(`   - Auth Login: http://localhost:${port}/api/auth/login`);
+    console.log(`   - Protected Me: http://localhost:${port}/api/me`);
     console.log(`   - Workflows: http://localhost:${port}/api/workflows`);
     console.log(`   - Execute Workflow: http://localhost:${port}/api/executions/:workflowId/execute`);
   });
