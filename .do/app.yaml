@@ -1,0 +1,16 @@
+spec:
+  name: ai-workflow-platform
+  services:
+    - name: backend
+      dockerfile_path: backend/Dockerfile
+      http_port: 3001
+      envs:
+        - key: NODE_ENV
+          value: production
+    - name: frontend
+      dockerfile_path: frontend/Dockerfile
+      http_port: 3000
+      envs:
+        - key: NODE_ENV
+          value: production
+  static_sites: []

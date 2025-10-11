@@ -1,0 +1,33 @@
+{
+  "family": "ai-workflow-platform",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "ghcr.io/your-username/ai-workflow-backend:latest",
+      "portMappings": [{ "containerPort": 3001, "protocol": "tcp" }],
+      "essential": true,
+      "environment": [
+        { "name": "NODE_ENV", "value": "production" },
+        { "name": "DATABASE_URL", "value": "${DATABASE_URL}" },
+        { "name": "REDIS_URL", "value": "${REDIS_URL}" },
+        { "name": "JWT_SECRET", "value": "${JWT_SECRET}" }
+      ]
+    },
+    {
+      "name": "frontend",
+      "image": "ghcr.io/your-username/ai-workflow-frontend:latest",
+      "portMappings": [{ "containerPort": 3000, "protocol": "tcp" }],
+      "essential": true,
+      "environment": [
+        { "name": "NODE_ENV", "value": "production" },
+        { "name": "NEXT_PUBLIC_API_URL", "value": "${API_URL}" }
+      ]
+    }
+  ]
+}
