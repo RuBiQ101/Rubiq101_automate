@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  nginx-lb:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-lb.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend-1
+      - backend-2
+      - frontend-1
+      - frontend-2
+
+  backend-1:
+    extends:
+      file: docker-compose.prod.yml
+      service: backend
+    container_name: workflow_backend_1
+    ports:
+      - "3001:3001"
+
+  backend-2:
+    extends:
+      file: docker-compose.prod.yml
+      service: backend
+    container_name: workflow_backend_2
+    ports:
+      - "3002:3001"
+
+  frontend-1:
+    extends:
+      file: docker-compose.prod.yml
+      service: frontend
+    container_name: workflow_frontend_1
+    ports:
+      - "3000:3000"
+
+  frontend-2:
+    extends:
+      file: docker-compose.prod.yml
+      service: frontend
+    container_name: workflow_frontend_2
+    ports:
+      - "3003:3000"
+
+  worker-1:
+    extends:
+      file: docker-compose.prod.yml
+      service: worker
+    container_name: workflow_worker_1
+
+  worker-2:
+    extends:
+      file: docker-compose.prod.yml
+      service: worker
+    container_name: workflow_worker_2
+
+  worker-3:
+    extends:
+      file: docker-compose.prod.yml
+      service: worker
+    container_name: workflow_worker_3
