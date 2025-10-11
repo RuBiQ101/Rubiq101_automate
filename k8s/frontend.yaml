@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: awp-frontend
+  namespace: ai-workflow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: awp-frontend
+  template:
+    metadata:
+      labels:
+        app: awp-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/your-username/ai-workflow-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: awp-config
+          env:
+            - name: NODE_ENV
+              value: "production"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: awp-frontend
+  namespace: ai-workflow
+spec:
+  selector:
+    app: awp-frontend
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP

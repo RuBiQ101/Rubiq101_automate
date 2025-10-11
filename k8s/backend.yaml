@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: awp-backend
+  namespace: ai-workflow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: awp-backend
+  template:
+    metadata:
+      labels:
+        app: awp-backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/your-username/ai-workflow-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3001
+          envFrom:
+            - secretRef:
+                name: awp-secrets
+          env:
+            - name: NODE_ENV
+              value: "production"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: awp-backend
+  namespace: ai-workflow
+spec:
+  selector:
+    app: awp-backend
+  ports:
+    - port: 3001
+      targetPort: 3001
+      protocol: TCP

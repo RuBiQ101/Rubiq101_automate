@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: awp-config
+  namespace: ai-workflow
+data:
+  NEXT_PUBLIC_APP_NAME: "AI Workflow Platform"
+  NEXT_PUBLIC_API_URL: "/api"

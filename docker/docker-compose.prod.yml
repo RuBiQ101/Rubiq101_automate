@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  backend:
+    image: ghcr.io/${GITHUB_OWNER:-your-username}/ai-workflow-backend:latest
+    container_name: awp_backend
+    env_file:
+      - ../backend/.env
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/${GITHUB_OWNER:-your-username}/ai-workflow-frontend:latest
+    container_name: awp_frontend
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: awp_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: awp_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-workflow_platform}
+      POSTGRES_USER: ${POSTGRES_USER:-awp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: awp_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
