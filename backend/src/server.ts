@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express, { type Request, type Response, type NextFunction } from 'express';
+import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
 import executionsRouter from './routes/executions';
@@ -13,7 +14,8 @@ import { requireAuth, type AuthRequest } from './middleware/auth';
 async function startServer() {
   // Run migrations before starting server
   console.log('Running database migrations...');
-  const runMigrations = require('../migrate');
+  const migratePath = path.resolve(__dirname, '..', 'migrate.js');
+  const runMigrations = require(migratePath);
   await runMigrations();
   console.log('✅ Migrations completed successfully.\n');
 

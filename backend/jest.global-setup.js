@@ -47,7 +47,8 @@ module.exports = async () => {
   // Run migrations against the test DB
   process.env.NODE_ENV = 'test';
   try {
-    execSync('node migrate.js', { cwd: rootDir, stdio: 'inherit' });
+    const migratePath = path.resolve(rootDir, 'migrate.js');
+    execSync(`node "${migratePath}"`, { stdio: 'inherit' });
   } catch (e) {
     console.error('Migration failed for test DB:', e.message);
     throw e;
