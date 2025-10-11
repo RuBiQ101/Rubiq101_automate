@@ -7,4 +7,6 @@ module.exports = {
     'src/**/*.ts',
     '!src/**/*.d.ts',
   ],
+  globalSetup: '<rootDir>/jest.global-setup.js',
+  testTimeout: 60000,
 };
