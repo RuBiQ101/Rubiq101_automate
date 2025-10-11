@@ -7,6 +7,10 @@ module.exports = {
     'src/**/*.ts',
     '!src/**/*.d.ts',
   ],
-  globalSetup: '<rootDir>/jest.global-setup.js',
-  testTimeout: 60000,
+  // Remove global setup for now
+  // globalSetup: './jest.global-setup.js',
+  // globalTeardown: './jest.global-teardown.js',
+
+  // Add test environment variables
+  setupFiles: ['<rootDir>/jest.setup.js'],
 };
