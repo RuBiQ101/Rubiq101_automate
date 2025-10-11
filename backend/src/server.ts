@@ -5,11 +5,14 @@ import express, { type Request, type Response, type NextFunction } from 'express
 import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import executionsRouter from './routes/executions';
 import workflowsRouter from './routes/workflows';
 import llmRoutes from './routes/llm';
 import authRoutes from './routes/auth';
 import { requireAuth, type AuthRequest } from './middleware/auth';
+import { register, metricsMiddleware } from './utils/metrics';
+import logger, { requestLogger } from './utils/logger';
 
 async function startServer() {
   // Run migrations before starting server
@@ -26,6 +29,17 @@ async function startServer() {
   // Middleware
   app.use(helmet());
   app.use(cors());
+  // Rate limiting on API paths
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 1000,
+    message: 'Too many requests from this IP'
+  });
+  app.use('/api', limiter);
+
+  // Monitoring
+  app.use(metricsMiddleware);
+  app.use(requestLogger);
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
@@ -53,6 +67,13 @@ async function startServer() {
     });
   });
 
+  // Prometheus metrics endpoint
+  app.get('/metrics', async (_req: Request, res: Response) => {
+    res.set('Content-Type', (register as any).contentType || 'text/plain');
+    const metrics = await register.metrics();
+    res.end(metrics);
+  });
+
   // API routes
   app.use('/api/workflows', workflowsRouter);
   app.use('/api/llm', llmRoutes);
@@ -68,21 +89,19 @@ async function startServer() {
 
   // Start server
   app.listen(port, () => {
-    console.log(`✅ Server running on http://localhost:${port}`);
-    console.log(`📊 Database URL: ${dbUrl}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`\n🔗 API Endpoints:`);
-    console.log(`   - Root: http://localhost:${port}/`);
-    console.log(`   - Health: http://localhost:${port}/health`);
-    console.log(`   - Auth Signup: http://localhost:${port}/api/auth/signup`);
-    console.log(`   - Auth Login: http://localhost:${port}/api/auth/login`);
-    console.log(`   - Protected Me: http://localhost:${port}/api/me`);
-    console.log(`   - Workflows: http://localhost:${port}/api/workflows`);
-    console.log(`   - Execute Workflow: http://localhost:${port}/api/executions/:workflowId/execute`);
+    logger.info(`🚀 Server running on http://localhost:${port}`);
+    logger.info(`📊 Database URL configured: ${Boolean(dbUrl)}`);
+    logger.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 }
 
 startServer().catch(err => {
-  console.error('Failed to start server:', err);
+  logger.error('Failed to start server', { error: err?.message, stack: err?.stack });
   process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  process.exit(0);
 });
