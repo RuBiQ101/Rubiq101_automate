@@ -1,0 +1,12 @@
+{
+  "redirects": [
+    {
+      "source": ":path*",
+      "has": [
+        { "type": "host", "value": "www.orkx.in" }
+      ],
+      "destination": "https://orkx.in/:path*",
+      "permanent": true
+    }
+  ]
+}
