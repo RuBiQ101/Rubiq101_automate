@@ -7,16 +7,20 @@ export const metadata: Metadata = {
     'Create powerful automation workflows with AI. Drag, drop, and deploy intelligent processes that scale your business.',
   keywords: 'AI automation, workflow builder, no-code, artificial intelligence',
   openGraph: {
-    title: 'FlowAI - AI Workflow Automation',
+    title: 'Orkx - AI Workflow Automation',
     description: 'The easiest way to build AI-powered workflows',
-    url: 'https://flowai.com',
+    url: 'https://orkx.in',
     images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FlowAI - AI Workflow Automation',
+    title: 'Orkx - AI Workflow Automation',
     description: 'Build intelligent workflows with AI',
     images: ['/og-image.png'],
+  },
+  metadataBase: new URL('https://orkx.in'),
+  alternates: {
+    canonical: '/',
   },
 };
 
