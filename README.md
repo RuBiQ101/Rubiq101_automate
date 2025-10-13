@@ -71,3 +71,35 @@ Notes:
 
 ## License
 MIT — see `LICENSE`.
+
+## Deploying with multiple Vercel projects (frontend + marketing-site)
+
+This repo contains two web apps:
+
+- `frontend/` — the main app
+- `marketing-site/` — the public site for orkx.in
+
+We use two Vercel projects to keep routing and domains clean:
+
+1) Root project (connect repository root)
+	 - Root `vercel.json` rewrites all routes to `/frontend`:
+		 - This serves the main app.
+	 - Do NOT attach `orkx.in` here.
+	 - Use a separate domain/subdomain for the app (e.g., `app.orkx.in`) if this project is on Vercel, or host it elsewhere.
+
+2) Marketing site project (set Root Directory to `marketing-site/` in Vercel)
+	 - Uses `marketing-site/next.config.js` and `marketing-site/vercel.json`.
+	 - Attach `orkx.in` and `www.orkx.in` to THIS project.
+	 - `marketing-site/vercel.json`/Next.js config enforce `www` → apex redirect.
+
+Why this matters
+- The root `vercel.json` only affects the project connected to the repository root.
+- The marketing site (with Root Directory set to `marketing-site`) is isolated from the root config and won’t be overridden by it.
+
+Quick checklist
+- Root project: rewrite to `/frontend`; domains: NOT `orkx.in`.
+- Marketing-site project: domains `orkx.in` (Primary) and `www.orkx.in`.
+- DNS:
+	- `@` (apex) → Vercel A 76.76.21.21
+	- `www` → `cname.vercel-dns.com`
+	- Optional: `app`/`api` → point to your respective hosts.
