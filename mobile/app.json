@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "AI Workflow",
+    "slug": "ai-workflow-mobile",
+    "scheme": "aiworkflow",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "extra": {
+      "apiUrl": "https://api.orkx.in"
+    }
+  }
+}
