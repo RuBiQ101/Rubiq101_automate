@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { login } from '@/lib/auth';
 
@@ -35,6 +35,9 @@ export default function LoginScreen() {
         onChangeText={setPassword}
       />
       <Button title={loading ? 'Signing in…' : 'Sign in'} onPress={onSubmit} disabled={loading} />
+      <TouchableOpacity style={{ marginTop: 12 }} onPress={() => router.replace('/signup')}>
+        <Text style={{ color: '#2563eb' }}>Create an account</Text>
+      </TouchableOpacity>
     </View>
   );
 }

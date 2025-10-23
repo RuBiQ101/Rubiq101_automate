@@ -16,12 +16,16 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.aiworkflowmobile"
     },
     "web": {
       "bundler": "metro",
       "output": "static"
     },
+    "plugins": [
+      "expo-system-ui"
+    ],
     "extra": {
       "apiUrl": "http://10.0.2.2:3001"
     }

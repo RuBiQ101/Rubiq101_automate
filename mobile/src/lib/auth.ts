@@ -21,7 +21,7 @@ export async function clearToken() {
 
 export async function login(email: string, password: string): Promise<boolean> {
   try {
-    const res = await api.post('/auth/login', { email, password });
+  const res = await api.post('auth/login', { email, password });
     const token = res.data?.token;
     if (token) {
       await setToken(token);
@@ -35,4 +35,18 @@ export async function login(email: string, password: string): Promise<boolean> {
 
 export async function logout() {
   await clearToken();
+}
+
+export async function signup(name: string, email: string, password: string): Promise<boolean> {
+  try {
+    const res = await api.post('auth/signup', { name, email, password });
+    const token = res.data?.token;
+    if (token) {
+      await setToken(token);
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
 }

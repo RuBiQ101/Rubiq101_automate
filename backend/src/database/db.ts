@@ -2,7 +2,9 @@ import { Pool, type PoolConfig } from 'pg';
 import dotenv from 'dotenv';
 import logger from '../utils/logger';
 
-dotenv.config();
+// Ensure local .env takes precedence during development to avoid picking up
+// unrelated system-level envs (like a different DATABASE_URL)
+dotenv.config({ override: true });
 
 const poolConfig: PoolConfig = {
   connectionString: process.env.DATABASE_URL,

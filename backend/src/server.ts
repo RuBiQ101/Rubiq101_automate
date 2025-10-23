@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
-dotenv.config();
+// Load environment variables from .env and override any existing ones to avoid
+// conflicts with system-level variables (e.g., a global DATABASE_URL)
+dotenv.config({ override: true });
 
 import express, { type Request, type Response, type NextFunction } from 'express';
 import path from 'path';
