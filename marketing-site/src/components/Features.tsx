@@ -9,33 +9,33 @@ import {
 
 const features = [
   {
-    name: 'AI-Powered Automation',
-    description: 'Integrate GPT-4, Claude, and other leading AI models directly into your workflows.',
+    name: 'Advanced AI Integration',
+    description: 'Native support for GPT-4, Claude, and custom AI models with intelligent prompt management and cost optimization.',
     icon: CpuChipIcon,
   },
   {
     name: 'Visual Workflow Builder',
-    description: 'Drag-and-drop interface makes creating complex workflows intuitive and fast.',
+    description: 'React Flow-powered canvas with drag-and-drop interface. Build complex logic with conditional branches and loops.',
     icon: BoltIcon,
   },
   {
     name: 'Enterprise Security',
-    description: 'End-to-end encryption, role-based access, and SOC 2 compliance ready.',
+    description: 'JWT authentication, encrypted data storage, role-based access control, and secure API endpoints.',
     icon: ShieldCheckIcon,
   },
   {
-    name: 'Real-time Analytics',
-    description: 'Monitor performance, track costs, and optimize your workflows with detailed insights.',
+    name: 'Real-time Monitoring',
+    description: 'Built-in analytics dashboard with execution tracking, performance metrics, and cost analysis.',
     icon: ChartBarIcon,
   },
   {
-    name: 'Cloud Native',
-    description: 'Built for scale with auto-scaling, load balancing, and 99.9% uptime SLA.',
+    name: 'Full-Stack TypeScript',
+    description: 'Next.js frontend, Express.js backend, PostgreSQL database, and Redis caching for maximum performance.',
     icon: CloudArrowUpIcon,
   },
   {
-    name: 'Extensive Integrations',
-    description: 'Connect to 500+ apps and services including Slack, Gmail, Salesforce, and more.',
+    name: 'Cross-Platform Apps',
+    description: 'Native mobile app built with React Native and Expo. Access your workflows anywhere, anytime.',
     icon: Cog6ToothIcon,
   },
 ];
@@ -45,12 +45,12 @@ export function Features() {
     <div className="py-12 bg-white" id="features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="lg:text-center">
-          <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">Features</h2>
+          <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">Platform Features</h2>
           <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            Everything you need to automate intelligently
+            Production-ready AI workflow platform
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-            Powerful features that make AI automation accessible to everyone
+            Built with modern technologies for scalability, security, and developer experience
           </p>
         </div>
 

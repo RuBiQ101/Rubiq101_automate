@@ -10,16 +10,17 @@ export function Hero() {
           <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
             <div className="sm:text-center lg:text-left">
               <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                <span className="block xl:inline">Build Intelligent</span>{' '}
-                <span className="block text-indigo-600 xl:inline">AI Workflows</span>
+                <span className="block xl:inline">Build</span>{' '}
+                <span className="block text-indigo-600 xl:inline">AI-Powered Workflows</span>{' '}
+                <span className="block xl:inline">Visually</span>
               </h1>
               <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                Create powerful automation workflows with AI. Drag, drop, and deploy intelligent processes that scale your business. No coding required.
+                Connect AI models like GPT-4 and Claude with 500+ apps. Create intelligent automation workflows with our visual drag-and-drop builder. Available on web and mobile.
               </p>
               <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                 <div className="rounded-md shadow">
                   <Link
-                    href="/signup"
+                    href="https://app.orkx.in/signup"
                     className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
                   >
                     Start Building Free
@@ -27,14 +28,17 @@ export function Hero() {
                   </Link>
                 </div>
                 <div className="mt-3 sm:mt-0 sm:ml-3">
-                  <button className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10">
+                  <Link
+                    href="https://app.orkx.in/demo"
+                    className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10"
+                  >
                     <PlayIcon className="mr-2 h-5 w-5" />
-                    Watch Demo
-                  </button>
+                    Try Live Demo
+                  </Link>
                 </div>
               </div>
               <div className="mt-6 flex items-center text-sm text-gray-500">
-                <span>🚀 Join 10,000+ users automating with AI</span>
+                <span>🚀 Full-stack TypeScript • Web + Mobile • Enterprise Ready</span>
               </div>
             </div>
           </main>
