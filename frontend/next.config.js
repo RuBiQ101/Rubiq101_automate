@@ -2,7 +2,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Performance
-  swcMinify: true,
   compress: true,
   poweredByHeader: false,
 
@@ -32,9 +31,7 @@ const nextConfig = {
     return config;
   },
 
-  experimental: {
-    serverComponentsExternalPackages: ['@reactflow/core'],
-  },
+  serverExternalPackages: ['@reactflow/core'],
 
   async headers() {
     return [
@@ -54,8 +51,6 @@ const nextConfig = {
       },
     ];
   },
-
-  editor: undefined,
 };
 
 module.exports = nextConfig;

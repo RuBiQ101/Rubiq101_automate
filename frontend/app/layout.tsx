@@ -1,16 +1,18 @@
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import Sidebar from "@/components/Sidebar";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body style={{ display: "flex" }}>
+      <body className="bg-gray-50 min-h-screen">
         <AuthProvider>
-          <nav style={{ width: 240, padding: 16, borderRight: "1px solid #eee" }}>
-            <a href="/">Home</a><br/>
-            <a href="/workflows">Workflows</a>
-          </nav>
-          <main style={{ flex: 1 }}>{children}</main>
+          <div className="flex h-screen">
+            <Sidebar />
+            <main className="flex-1 overflow-auto">
+              {children}
+            </main>
+          </div>
         </AuthProvider>
       </body>
     </html>
