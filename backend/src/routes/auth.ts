@@ -35,7 +35,7 @@ router.post('/signup', async (req, res) => {
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(6),
 });
 
 router.post('/login', async (req, res) => {

@@ -1,5 +1,7 @@
+"use client";
 import { PlayIcon, EyeIcon, CodeBracketIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 const demoWorkflows = [
   {
@@ -7,6 +9,7 @@ const demoWorkflows = [
     description: 'Transform ideas into blog posts using GPT-4, with automatic SEO optimization and publishing to CMS.',
     features: ['GPT-4 Integration', 'SEO Analysis', 'Auto Publishing', 'Content Calendar'],
     image: '📝',
+    fallbackImage: '📄',
     complexity: 'Beginner'
   },
   {
@@ -14,6 +17,7 @@ const demoWorkflows = [
     description: 'Intelligent chatbot that handles customer queries, escalates complex issues, and updates CRM automatically.',
     features: ['Claude Integration', 'Sentiment Analysis', 'CRM Updates', 'Email Notifications'],
     image: '🤖',
+    fallbackImage: '🔧',
     complexity: 'Intermediate'
   },
   {
@@ -21,11 +25,18 @@ const demoWorkflows = [
     description: 'Process CSV files, run AI analysis, generate insights, and create automated reports with charts.',
     features: ['Data Processing', 'AI Analysis', 'Chart Generation', 'PDF Reports'],
     image: '📊',
+    fallbackImage: '📈',
     complexity: 'Advanced'
   }
 ];
 
 export function Demo() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <section className="py-16 bg-gradient-to-br from-gray-50 to-white" id="demo">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,7 +56,9 @@ export function Demo() {
               <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="text-4xl">{workflow.image}</div>
+                    <div className="text-4xl" suppressHydrationWarning>
+                      {mounted ? workflow.image : workflow.fallbackImage}
+                    </div>
                     <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                       workflow.complexity === 'Beginner' ? 'bg-green-100 text-green-800' :
                       workflow.complexity === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
@@ -69,7 +82,7 @@ export function Demo() {
                   
                   <div className="flex space-x-2">
                     <Link
-                      href={`https://app.orkx.in/demo/${workflow.title.toLowerCase().replace(/\s+/g, '-')}`}
+                      href={`/demo/${workflow.title.toLowerCase().replace(/\s+/g, '-')}`}
                       className="flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors"
                     >
                       <PlayIcon className="w-4 h-4 mr-1" />
@@ -92,14 +105,14 @@ export function Demo() {
             <p className="text-gray-600 mb-6">Start with our interactive tutorial and build your first AI workflow in under 10 minutes.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="https://app.orkx.in/tutorial"
+                href="/tutorial"
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
               >
                 <CodeBracketIcon className="w-5 h-5 mr-2" />
                 Start Tutorial
               </Link>
               <Link
-                href="https://docs.orkx.in/examples"
+                href="/examples"
                 className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
               >
                 Browse Examples

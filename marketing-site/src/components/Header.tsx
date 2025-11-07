@@ -28,14 +28,21 @@ export function Header() {
           <a href="#demo" className="text-sm font-semibold leading-6 text-gray-900">Demo</a>
           <a href="#tech-stack" className="text-sm font-semibold leading-6 text-gray-900">Tech Stack</a>
           <a href="#pricing" className="text-sm font-semibold leading-6 text-gray-900">Pricing</a>
-          <Link href="https://docs.orkx.in" className="text-sm font-semibold leading-6 text-gray-900">Docs</Link>
+          <Link href="/docs" className="text-sm font-semibold leading-6 text-gray-900">Docs</Link>
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-x-4">
-          <Link href="https://app.orkx.in/login" className="text-sm font-semibold leading-6 text-gray-900">
+          <Link 
+            href="http://localhost:3005" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-semibold leading-6 text-gray-900"
+          >
             Log in <span aria-hidden="true">&rarr;</span>
           </Link>
           <Link
-            href="https://app.orkx.in/signup"
+            href="http://localhost:3005"
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
           >
             Start Free Trial
@@ -67,8 +74,22 @@ export function Header() {
                   <a href="#pricing" className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Pricing</a>
                 </div>
                 <div className="py-6">
-                  <Link href="https://app.orkx.in/login" className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log in</Link>
-                  <Link href="https://app.orkx.in/signup" className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Start Free Trial</Link>
+                  <Link 
+                    href="http://localhost:3005" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  >
+                    Log in
+                  </Link>
+                  <Link 
+                    href="http://localhost:3005" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  >
+                    Start Free Trial
+                  </Link>
                 </div>
               </div>
             </div>

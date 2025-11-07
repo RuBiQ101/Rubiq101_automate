@@ -5,3 +5,32 @@
 html, body {
   height: 100%;
 }
+
+/* Prevent browser extension interference */
+* {
+  /* Reset extension-added properties */
+  cursor: auto !important;
+}
+
+/* Remove extension attributes using CSS */
+[bis_skin_checked] {
+  /* Ensure no visual changes from extension attributes */
+  all: revert;
+}
+
+[bis_register] {
+  /* Ensure no visual changes from extension attributes */
+  all: revert;
+}
+
+/* Prevent hydration warnings by stabilizing dynamic content */
+.hydration-safe {
+  /* Use this class for elements with dynamic content */
+  contain: layout style;
+}
+
+/* Improve hydration performance */
+.next-error-h1 {
+  /* Hide Next.js error styling that might conflict */
+  display: none !important;
+}
